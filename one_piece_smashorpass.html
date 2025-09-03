@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>One Piece Smash or Pass</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #111;
+      color: #eee;
+    }
+    #game-container {
+      margin-top: 40px;
+    }
+    #character-img {
+      width: 640px;
+      height: 512px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border: 2px solid #eee;
+    }
+    button {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: #444;
+      color: #fff;
+    }
+    button:hover {
+      background: #666;
+    }
+    #results {
+      margin-top: 30px;
+    }
+    #results img {
+      width: 640px;
+      height: 512px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin: 10px 0;
+      border: 2px solid #eee;
+    }
+    #results p {
+      font-size: 24px;
+      margin: 5px 0;
+    }
+      #counter {
+      margin: 15px;
+      font-size: 18px;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>One Piece Smash or Pass</h1>
+  <div id="game-container">
+    <div id="counter"></div>
+    <img id="character-img" src="" alt="Character Image">
+    <h2 id="character-name"></h2>
+    <div>
+      <button onclick="choose('Smash')">Smash</button>
+      <button onclick="choose('Pass')">Pass</button>
+      <button onclick="goBack()">⬅ Back</button>
+    </div>
+  </div>
+  <div id="results"></div>
+  <div id="reset-container" style="display:none; margin-top:20px;">
+  <button onclick="resetGame()">Reset Game</button>
+  <button onclick="shareList()">Share List</button>
+  </div>
+
+  <script>
+    const characters = [
+      { name: "Nami", img: "https://imgur.com/KWnhvje.jpg" },
+      { name: "Nico Robin", img: "https://imgur.com/7wqHfGf.jpg" },
+      { name: "Boa Hancock", img: "https://imgur.com/9R38n29.jpg" },
+      { name: "Yamato", img: "https://imgur.com/kmvDk57.jpg" },
+      { name: "Reiju Vinsmoke", img: "https://imgur.com/pmzaPYY.jpg" },
+      { name: "Shirahoshi", img: "https://imgur.com/FmJrmjS.jpg" },
+      { name: "Tashigi", img: "https://imgur.com/BnHv4Zm.jpg" },
+      { name: "Perona", img: "https://imgur.com/cKvAnJC.jpg" },
+      { name: "Jewelry Bonney", img: "https://imgur.com/UzSdTUK.jpg" },
+      { name: "Kalifa", img: "https://imgur.com/addz6np.jpg" },
+      { name: "Vivi Nefertari", img: "https://imgur.com/qu3FPsy.jpg" },
+      { name: "Ulti", img: "https://imgur.com/tt9sKBW.jpg" },
+      { name: "Kikunojo", img: "https://imgur.com/6AVRUF8.jpg" },
+      { name: "Hina", img: "https://imgur.com/amEpKWA.jpg" },
+      { name: "Stussy", img: "https://imgur.com/tIW8NKu.jpg" },
+      { name: "Marguerite", img: "https://imgur.com/GEsTgQR.jpg" },
+      { name: "Charlotte Pudding", img: "https://imgur.com/xXc34Nf.jpg" },
+      { name: "Sugar", img: "https://imgur.com/BOusQRl.jpg" },
+      { name: "Monet", img: "https://imgur.com/Wh7OUOn.jpg" },
+      { name: "Baby 5", img: "https://imgur.com/EA0sxoa.jpg" },
+      { name: "Rebecca", img: "https://imgur.com/6TXNIYR.jpg" },
+      { name: "Viola", img: "https://imgur.com/E9SaubM.jpg" },
+      { name: "Carrot", img: "https://imgur.com/TN7UKAb.jpg" },
+      { name: "Wanda", img: "https://imgur.com/dUWlOty.jpg" },
+      { name: "Alvida", img: "https://imgur.com/7P8vhEy.jpg" },
+      { name: "Miss Valentine", img: "https://imgur.com/bNe9jhg.jpg" },
+      { name: "Porche", img: "https://imgur.com/8gFO7g6.jpg" },
+      { name: "Domino", img: "https://imgur.com/xQl0F1Q.jpg" },
+      { name: "Sadi-chan", img: "https://imgur.com/ZAGSsk8.jpg" },
+      { name: "Tsuru", img: "https://imgur.com/fJyuDDc.jpg" },
+      { name: "Kokoro", img: "https://imgur.com/Z07txTD.jpg" },
+      { name: "Camie", img: "https://imgur.com/UCXLIrk.jpg" },
+      { name: "Conis", img: "https://imgur.com/xQGHjxm.jpg" },
+      { name: "Makino", img: "https://imgur.com/WfYzuLW.jpg" },
+      { name: "Curly Dadan", img: "https://imgur.com/93DM1vJ.jpg" },
+      { name: "Speed", img: "https://imgur.com/0DqCceJ.jpg" },
+      { name: "Black Maria", img: "https://imgur.com/F1eL3TE.jpg" },
+      { name: "Kaya", img: "https://imgur.com/y73VDaw.jpg" },
+      { name: "Nojiko", img: "https://imgur.com/lmu6T81.jpg" },
+      { name: "Bell-mère", img: "https://imgur.com/5eSSFaz.jpg" },
+      { name: "Charlotte Smoothie", img: "https://imgur.com/sNLksNd.jpg" },
+      { name: "Charlotte Brûlée", img: "https://imgur.com/uoDU68G.jpg" },
+      { name: "Charlotte Compote", img: "https://imgur.com/hWPB5SI.jpg" },
+      { name: "Charlotte Galette", img: "https://imgur.com/KcHTgu0.jpg" },
+      { name: "Charlotte Amande", img: "https://imgur.com/2cJg8tX.jpg" },
+      { name: "Charlotte Praline", img: "https://imgur.com/5YG1miI.jpg" },
+      { name: "Victoria Cindry", img: "https://imgur.com/DKn9ETm.jpg" },
+      { name: "Hiyori Kozuki", img: "https://imgur.com/kZ5UEt9.jpg" },
+      { name: "Toki Kozuki", img: "https://imgur.com/7ftBktj.jpg" },
+      { name: "Otohime", img: "https://imgur.com/wvHDY5u.jpg" },
+      { name: "Miss Doublefinger", img: "https://imgur.com/Ww25U9P.jpg" },
+	  { name: "Aphelandra", img: "https://imgur.com/BQUsyH8.jpg" },
+	  { name: "Belo Betty", img: "https://imgur.com/7bCeVmN.jpg" },
+	  { name: "Boa Sandersonia", img: "https://imgur.com/iu1i9e2.jpg" },
+	  { name: "Boa Marigold", img: "https://imgur.com/ePqbMfO.jpg" },
+	  { name: "Catarina Devon", img: "https://imgur.com/5bZMHcD.jpg" },
+	  { name: "Charlotte Chiffon", img: "https://imgur.com/uDtN3fE.jpg" },
+	  { name: "Charlotte Linlin", img: "https://imgur.com/fSG3uwf.jpg" },
+	  { name: "Emporio Ivankov", img: "https://imgur.com/kgtWv0U.jpg" },
+	  { name: "Charlotte Flampe", img: "https://imgur.com/5VZtpEw.jpg" },
+	  { name: "Giolla", img: "https://imgur.com/V1Z7YBW.jpg" },
+	  { name: "Kikyo", img: "https://imgur.com/u6MvdBZ.jpg" },
+	  { name: "Kureha", img: "https://imgur.com/jTEFEuG.jpg" },
+	  { name: "Kuina", img: "https://imgur.com/1vj2gmG.jpg" },
+	  { name: "Koala", img: "https://imgur.com/IugjGn5.jpg" },
+	  { name: "Raki", img: "https://imgur.com/QmWraj4.jpg" },
+	  { name: "Miss Merry Christmas", img: "https://imgur.com/YXLCSv2.jpg" },
+	  { name: "Miss Goldenweek", img: "https://imgur.com/XRrAeI2.jpg" },
+	  { name: "Gloriousa", img: "https://imgur.com/pu4YUUw.jpg" },
+	  { name: "Shyarly", img: "https://imgur.com/HSECj79.jpg" },
+	  { name: "Vinsmoke Sora", img: "https://imgur.com/DtzxYql.jpg" },
+	  { name: "Wicca", img: "https://imgur.com/dshUVEp.jpg" },
+	  { name: "Whitey Bay", img: "https://imgur.com/BYDNbBt.jpg" },
+	  { name: "Charlotte Custard", img: "https://imgur.com/j9fiOWr.jpg" },
+	  { name: "Mozu", img: "https://imgur.com/jEMAelT.jpg" },
+	  { name: "Kiwi", img: "https://imgur.com/zKFBHMi.jpg" },
+	  { name: "Sweet Pea", img: "https://imgur.com/lJqdR0e.jpg" },
+	  { name: "Princess Mansherry", img: "https://imgur.com/6DcVY6v.jpg" },
+	  { name: "Charlotte Poire", img: "https://imgur.com/4UJraKk.jpg" },
+	  { name: "Tristan", img: "https://imgur.com/Gx5me10.jpg" },
+	  { name: "Shinobu", img: "https://imgur.com/4TMei5Q.jpg" },
+	  { name: "O-Tsuru", img: "https://imgur.com/tahXkV3.jpg" },
+	  { name: "Miss Monday", img: "https://imgur.com/YhQ0w0o.jpg" },
+	  { name: "Scarlett", img: "https://imgur.com/RSNqXNX.jpg" },
+	  { name: "Hibari", img: "https://imgur.com/iu5UzyL.jpg" },
+	  { name: "Doll", img: "https://imgur.com/Qi6cxHd.jpg" },
+	  { name: "Ain", img: "https://imgur.com/WpW9OOt.jpg" },
+	  { name: "Baccarat", img: "https://imgur.com/BRzxEWo.jpg" },
+	  { name: "Carina", img: "https://imgur.com/dHZx1B8.jpg" },
+	  { name: "Uta", img: "https://imgur.com/VhqRg6A.jpg" },
+	  { name: "Charlotte Citron", img: "https://imgur.com/1DtTvBT.jpg" },
+	  { name: "Shakuyaku", img: "https://imgur.com/1XOgrNL.jpg" },
+	  { name: "Gion", img: "https://imgur.com/ZQktgib.jpg" },
+	  { name: "Kujako", img: "https://imgur.com/RPQTkpy.jpg" },
+	  { name: "Miss Father's Day", img: "https://imgur.com/zxMruKE.jpg" },
+	  { name: "Terracotta", img: "https://imgur.com/Dz2DCkA.jpg" },
+	  { name: "Rindo", img: "https://imgur.com/arUKF9K.jpg" },
+	  { name: "Ginrummy", img: "https://imgur.com/cuW4cVp.jpg" },
+	  { name: "Isuka", img: "https://imgur.com/wScllOF.jpg" }
+	  
+    ];
+
+    let index = 0;
+    let choices = new Array(characters.length).fill(null);
+	
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+    }
+
+    shuffle(characters);
+
+    const nameEl = document.getElementById("character-name");
+    const imgEl = document.getElementById("character-img");
+    const resultsEl = document.getElementById("results");
+    const counterEl = document.getElementById("counter");
+
+    function updateCounter() {
+      counterEl.textContent = `Remaining: ${characters.length - index} / ${characters.length}`;
+    }
+
+    function showCharacter(i) {
+      if (i < characters.length) {
+        nameEl.textContent = characters[i].name;
+        imgEl.src = characters[i].img;
+        updateCounter();
+      } else {
+        endGame();
+      }
+    }
+
+    function choose(choice) {
+      choices[index] = choice;
+      index++;
+      if (index < characters.length) {
+        showCharacter(index);
+      } else {
+        endGame();
+      }
+    }
+
+    function goBack() {
+      if (index > 0) {
+        index--;
+        showCharacter(index);
+      }
+    }
+
+    function endGame() {
+      document.getElementById("game-container").style.display = "none";
+      document.getElementById("reset-container").style.display = "block";
+      const smashed = characters.filter((c, i) => choices[i] === "Smash");
+      resultsEl.innerHTML = `<h2>You smashed ${smashed.length} characters:</h2>`;
+      resultsEl.innerHTML += smashed.map(c => `<div><img src="${c.img}" alt="${c.name}"><p>${c.name}</p></div>`).join('');
+    }
+
+    function shareList() {
+    const smashed = characters.filter((c, i) => choices[i] === "Smash");
+    if (smashed.length === 0) {
+    alert("You haven't smashed any characters yet!");
+    return;
+    }
+    const namesList = smashed.map(c => c.name).join(", ");
+    const textToCopy = `I would smash these women from One Piece: ${namesList}`;
+  
+    navigator.clipboard.writeText(textToCopy)
+    .then(() => {
+      alert("Smash list copied to clipboard!");
+    })
+    .catch(err => {
+      alert("Failed to copy: " + err);
+    });
+    }
+
+
+    function resetGame() {
+      index = 0;
+      choices = new Array(characters.length).fill(null);
+      document.getElementById("game-container").style.display = "block";
+      document.getElementById("reset-container").style.display = "none";
+      resultsEl.innerHTML = "";
+      showCharacter(index);
+    }
+
+    // Start the game
+    showCharacter(index);
+  </script>
+</body>
+</html>
